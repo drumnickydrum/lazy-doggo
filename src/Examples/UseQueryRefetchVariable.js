@@ -57,7 +57,7 @@ function SelectBreed({ selectedBreed, setSelectedBreed }) {
 function Features() {
   return (
     <ul className='description'>
-      <li>I will pass a variable on initial render:</li>
+      <li>State or hard-code variable on initial render:</li>
       <CodeBlock
         withBackground
         code={`const { refetch } = useQuery(

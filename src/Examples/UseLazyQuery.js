@@ -1,49 +1,47 @@
 import { useLazyQuery } from '@apollo/client';
 import { getDogPhotoQuery } from '../graphql';
 import { useReRender } from '../hooks';
-import { Section, InlineCode, Photo } from '../components';
+import { Section, Photo } from '../components';
 
 export function UseLazyQuery() {
   const ReRender = useReRender();
 
-  const { loading, error, data, refetch, networkStatus } = useLazyQuery(
+  const [getDog, { loading, error, data, called }] = useLazyQuery(
     getDogPhotoQuery,
     {
-      variables: { breed: 'corgi' },
-      notifyOnNetworkStatusChange: true,
+      variables: { breed: 'retriever' },
+      fetchPolicy: 'no-cache',
     }
   );
 
   if (error) return `Error! ${error}`;
   return (
-    <Section title='useLazyQuery' subtitle='(cache-first)'>
+    <Section title='useLazyQuery' subtitle=''>
       <ul className='description'>
-        <li>I will query the network on initial render</li>
         <li>
-          Subsequent renders will query my <b>cache</b>
+          I will <em>not</em> query the network on initial render
         </li>
-        <li>
-          Use the
-          <InlineCode code='refetch' />
-          function to make a new network request
-        </li>
+        <li>I provide an on-demand query function</li>
       </ul>
 
       <ReRender />
 
-      <button className='button' onClick={() => !loading && refetch()}>
-        Refetch a Corgi!
+      <button className='button' onClick={getDog}>
+        Fetch a new doggo!
       </button>
 
       <hr />
       <div className='photoContainer'>
-        <Photo
-          id={data?.dog?.id}
-          breed={'corgi'}
-          image={data?.dog?.displayImage}
-          loading={loading}
-          networkStatus={networkStatus}
-        />
+        {called ? (
+          <Photo
+            id={data?.dog?.id}
+            breed={'good boy'}
+            image={data?.dog?.displayImage}
+            loading={loading}
+          />
+        ) : (
+          <p className='description'>query function not called yet</p>
+        )}
       </div>
     </Section>
   );

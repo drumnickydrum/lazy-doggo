@@ -4,7 +4,7 @@ import { getRandomRGB } from '../utils/getRandomRGB';
 import { CodeBlock } from './CodeBlock';
 
 export function Photo({ id, breed, image, loading, networkStatus }) {
-  if (networkStatus === NetworkStatus.refetch) {
+  if (networkStatus && networkStatus === NetworkStatus.refetch) {
     return `Refetching ${breed} from network`;
   } else if (loading) {
     return `Loading ${breed} from network...`;

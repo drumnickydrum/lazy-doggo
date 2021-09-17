@@ -23,7 +23,7 @@ export function UseQuery() {
 
       <ReRender />
 
-      <button className='button' onClick={() => !loading && refetch()}>
+      <button className='button' onClick={refetch}>
         Refetch a Corgi!
       </button>
 
