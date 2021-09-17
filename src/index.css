@@ -67,6 +67,7 @@ hr {
   padding: 1rem;
   min-height: 300px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -76,4 +77,9 @@ hr {
   max-height: 300px;
   border-radius: 32px;
   filter: drop-shadow(2px 2px 4px rgba(242, 103, 75, 0.5));
+}
+
+.cacheStatus {
+  margin: 1rem;
+  text-align: center;
 }

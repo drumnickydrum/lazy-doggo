@@ -46,7 +46,6 @@ export function DogPhoto() {
     getDogPhotoQuery,
     {
       variables: { breed: 'corgi' },
-      onCompleted: () => console.log('on completed'),
       notifyOnNetworkStatusChange: true,
     }
   );
@@ -57,12 +56,17 @@ export function DogPhoto() {
 
   if (error) return `Error! ${error}`;
   return (
-    <Section title='useQuery' subtitle='(I make a request with every render)'>
-      <p className='description'>
-        Subsequent renders will query my <b>cache</b>, but you can use the
-        <InlineCode>refetch</InlineCode>
-        function to make a network request
-      </p>
+    <Section title='useQuery' subtitle='(cache-first)'>
+      <ul className='description'>
+        <li>
+          Subsequent renders will query my <b>cache</b>
+        </li>
+        <li>
+          Use the
+          <InlineCode>refetch</InlineCode>
+          function to make a new network request
+        </li>
+      </ul>
       <code className='count'>Component rendered {countRef.current} times</code>
       <button
         className='button'
@@ -74,12 +78,15 @@ export function DogPhoto() {
         Refetch a Corgi!
       </button>
 
-      <Photo
-        breed={'corgi'}
-        image={data?.dog?.displayImage}
-        loading={loading}
-        networkStatus={networkStatus}
-      />
+      <hr />
+      <div className='photoContainer'>
+        <Photo
+          breed={'corgi'}
+          image={data?.dog?.displayImage}
+          loading={loading}
+          networkStatus={networkStatus}
+        />
+      </div>
     </Section>
   );
 }
@@ -95,19 +102,30 @@ function Section({ title, subtitle, children }) {
 }
 
 function Photo({ breed, image, loading, networkStatus }) {
+  if (networkStatus === NetworkStatus.refetch) {
+    return `Refetching ${breed} from network`;
+  } else if (loading) {
+    return `Loading ${breed} from network...`;
+  }
+  return <Image image={image} />;
+}
+
+function Image({ image }) {
+  const prevImgRef = useRef();
+  const isCache = prevImgRef.current === image;
+  prevImgRef.current = image;
+  const cacheColor = `rgb(${Math.random() * 255 + 50},${
+    Math.random() * 255 + 50
+  },${Math.random() * 255 + 50})`;
   return (
-    <>
-      <hr />
-      <div className='photoContainer'>
-        {networkStatus === NetworkStatus.refetch ? (
-          `Refetching ${breed} from network`
-        ) : loading ? (
-          `Loading ${breed} from network...`
-        ) : image ? (
-          <img className='photo' alt='corgi' src={image} />
-        ) : null}
-      </div>
-    </>
+    <div>
+      <img className='photo' alt='corgi' src={image} />
+      {isCache && (
+        <pre className='cacheStatus' style={{ color: cacheColor }}>
+          <code>(I came from cache)</code>
+        </pre>
+      )}
+    </div>
   );
 }
 
@@ -118,17 +136,3 @@ function InlineCode({ children }) {
     </span>
   );
 }
-/*
-
-<p className="description">
-        You can pass a
-        <span className="code">
-          <code>variables</code>
-        </span>
-        argument to override the initial options
-      </p>
-      <button className="button" onClick={handleBulldog}>
-        Refetch with variable of Bulldog
-      </button>
-
-      */
